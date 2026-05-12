@@ -4,6 +4,7 @@
   imports = [
     ../../modules/home/tmux.nix
     ../../modules/home/neovim.nix
+    ../../modules/home/zsh.nix
   ];
 
   home.username = "scaf";
