@@ -3,6 +3,7 @@
 {
   imports = [
     ../../modules/home/tmux.nix
+    ../../modules/home/neovim.nix
   ];
 
   home.username = "scaf";
