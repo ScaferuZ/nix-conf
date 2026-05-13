@@ -39,8 +39,8 @@
         "${modifier}+q" = "kill";
         "${modifier}+Shift+c" = "reload";
         "${modifier}+Shift+e" = "exec swaymsg exit";
-        "XF86MonBrightnessUp" = "exec light -A 5";
-        "XF86MonBrightnessDown" = "exec light -U 5";
+        "XF86MonBrightnessUp" = "exec brightnessctl set 5%+";
+        "XF86MonBrightnessDown" = "exec brightnessctl set 5%-";
       };
     };
   };

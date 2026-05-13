@@ -19,6 +19,7 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # Set your time zone.
   time.timeZone = "Asia/Jakarta";
@@ -33,7 +34,6 @@
   };
 
   programs.zsh.enable = true;
-  programs.light.enable = true;
 
   services.tailscale.enable = true;
 
@@ -62,6 +62,7 @@
    neovim
    git
    tmux
+   brightnessctl
   #  wget
   ];
 
