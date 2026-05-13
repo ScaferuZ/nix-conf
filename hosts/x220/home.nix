@@ -5,6 +5,7 @@
     ../../modules/home/tmux.nix
     ../../modules/home/neovim.nix
     ../../modules/home/zsh.nix
+    ../../modules/home/fzf.nix
   ];
 
   home.username = "scaf";

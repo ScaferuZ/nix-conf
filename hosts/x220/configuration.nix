@@ -73,7 +73,7 @@
       alsa.support32Bit = true;
       pulse.enable = true;
       wireplumber.enable = true;
-  }
+  };
 
   # sway
   hardware.graphics.enable = true;
