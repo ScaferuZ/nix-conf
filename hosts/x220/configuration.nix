@@ -33,12 +33,22 @@
   };
 
   programs.zsh.enable = true;
+  programs.light.enable = true;
+
+  services.tailscale.enable = true;
+
+  services.syncthing = {
+      enable = true;
+      user = "scaf";
+      dataDir = "/home/scaf/notes";
+      configDir = "/home/scaf/.config/syncthing";
+  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.scaf = {
     isNormalUser = true;
     description = "scaf";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "video" ];
     packages = with pkgs; [];
     shell = pkgs.zsh;
   };
