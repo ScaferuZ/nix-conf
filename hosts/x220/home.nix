@@ -20,6 +20,7 @@
     alacritty
     wl-clipboard
     wofi
+    obsidian
   ];
 
   wayland.windowManager.sway = {
