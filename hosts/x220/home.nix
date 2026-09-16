@@ -2,16 +2,15 @@
 
 {
   imports = [
+    ../../home/scaf/base.nix
     ../../modules/home/tmux.nix
     ../../modules/home/neovim.nix
     ../../modules/home/zsh.nix
     ../../modules/home/fzf.nix
   ];
 
-  home.username = "scaf";
-  home.homeDirectory = "/home/scaf";
   home.sessionVariables = {
-  MOZ_ENABLE_WAYLAND = "1";
+    MOZ_ENABLE_WAYLAND = "1";
   };
 
   programs.firefox.enable = true;
@@ -30,8 +29,8 @@
       terminal = "alacritty";
       input = {
         "*" = {
-	  xkb_options = "ctrl:nocaps,altwin:swap_alt_win";
-	};
+          xkb_options = "ctrl:nocaps,altwin:swap_alt_win";
+        };
       };
       workspaceLayout = "default";
       keybindings = pkgs.lib.mkOptionDefault {
@@ -46,12 +45,9 @@
         "XF86AudioRaiseVolume" = "exec wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 10%+";
         "XF86AudioLowerVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%-";
         "XF86AudioMute" = "exec wpctl set-mute  @DEFAULT_AUDIO_SINK@ toggle";
-        "XF86AudioMicMute"     = "exec wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle";
+        "XF86AudioMicMute" = "exec wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle";
       };
     };
   };
 
-  programs.home-manager.enable = true;
-
-  home.stateVersion = "25.11";
 }

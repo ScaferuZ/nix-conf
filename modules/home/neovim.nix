@@ -1,15 +1,17 @@
-{ config, pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   programs.neovim = {
     enable = true;
     defaultEditor = true;
-    
-    extraPackages = with pkgs; [
-      ripgrep
-      fd
-      xclip
-    ];
+
+    extraPackages =
+      with pkgs;
+      [
+        ripgrep
+        fd
+      ]
+      ++ lib.optionals pkgs.stdenv.isLinux [ pkgs.xclip ];
 
     plugins = with pkgs.vimPlugins; [
       orgmode

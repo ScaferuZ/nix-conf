@@ -1,10 +1,10 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   programs.zsh = {
     enable = true;
     enableCompletion = true;
-    
+
     # These two completely replace the need for Oh-My-Zsh plugins
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
@@ -13,13 +13,17 @@
       # Basic navigation
       ls = "ls -la";
       ".." = "cd ..";
-      
-      rebuild = "sudo nixos-rebuild switch --flake ~/nix-config#x220";
-      
+
+      rebuild =
+        if pkgs.stdenv.isDarwin then
+          "sudo darwin-rebuild switch --flake ~/.config/nix-conf#macbook-pro"
+        else
+          "sudo nixos-rebuild switch --flake ~/.config/nix-conf#x220";
+
       # Neovim muscle memory
       v = "nvim";
       vim = "nvim";
-      
+
       # Git shortcuts
       gs = "git status";
       ga = "git add .";
