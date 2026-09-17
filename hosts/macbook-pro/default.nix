@@ -24,6 +24,10 @@ let
     + ":/usr/bin:/bin:/usr/sbin:/sbin";
 in
 {
+  imports = [
+    ../../modules/darwin/homebrew.nix
+  ];
+
   system.primaryUser = user;
   users.users.${user}.home = "/Users/${user}";
 
