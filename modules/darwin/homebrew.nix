@@ -22,23 +22,22 @@
     ];
 
     brews = [
-      "arping"
       "beads"
       "beads_viewer"
       "composer"
+      # Keep the newer Homebrew codec build for media workflows.
       "ffmpeg"
       "firefoxpwa"
       # nixpkgs 25.11 trails this fast-moving release; keep it on Homebrew.
       "gemini-cli"
-      "ghostscript"
       "herdr"
       "hunk"
       "mole"
+      # Preserve Homebrew's native macOS media integration.
       "mpv"
+      # Keep the newer binary compatible with the unmanaged ~/.config/nvim repo.
       "neovim"
-      "nmap"
       "node"
-      "nss"
       "php@8.2"
       "pipx"
       "pnpm"
@@ -46,12 +45,11 @@
       "python@3.11"
       "python@3.12"
       "rtk"
-      "sshpass"
+      # Keep the newer macOS-native notification binary.
       "terminal-notifier"
+      # Keep this pair aligned with the Homebrew Neovim toolchain.
       "tree-sitter"
       "tree-sitter-cli"
-      "wireguard-tools"
-      "xorriso"
       "yarn"
       "zsh-autosuggestions"
       "zsh-syntax-highlighting"
