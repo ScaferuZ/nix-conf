@@ -14,7 +14,6 @@
       "can1357/tap"
       "dgunzy/tap"
       "floci-io/floci"
-      "fluxcd/tap"
       "plannotator/tap"
       {
         name = "sikarugir-app/sikarugir";
@@ -23,23 +22,17 @@
     ];
 
     brews = [
-      "ansible"
       "arping"
-      "awscli"
-      "azure-cli"
       "beads"
       "beads_viewer"
-      "biome"
       "composer"
       "ffmpeg"
       "firefoxpwa"
+      # nixpkgs 25.11 trails this fast-moving release; keep it on Homebrew.
       "gemini-cli"
       "ghostscript"
-      "graphviz"
       "herdr"
       "hunk"
-      "imagemagick"
-      "k6"
       "mole"
       "mpv"
       "neovim"
@@ -88,7 +81,6 @@
       brew "can1357/tap/omp", trusted: true
       brew "dgunzy/tap/flux9s", trusted: true
       brew "floci-io/floci/floci", trusted: true
-      brew "fluxcd/tap/flux", trusted: true
       brew "plannotator/tap/plannotator-tui", trusted: true
       cask "sikarugir-app/sikarugir/sikarugir", trusted: true
     '';
