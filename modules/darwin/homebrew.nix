@@ -1,14 +1,20 @@
-{ ... }:
-
 {
-  # Homebrew remains the source of truth for these packages during the first
-  # migration phase. Later beads move portable CLI tools to Home Manager in
-  # small, tested batches.
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+
+let
+  cleanupBrewfile = pkgs.writeText "Brewfile" config.homebrew.brewfile;
+in
+{
+  # Homebrew remains the source of truth for native, fast-moving, and mutable
+  # ecosystem packages that were intentionally retained after migration.
   homebrew = {
     enable = true;
 
     # Only taps that currently provide a declared formula or cask are listed.
-    # cleanup = "none" means existing unused taps are not removed on activation.
     taps = [
       "anomalyco/tap"
       "can1357/tap"
@@ -44,7 +50,9 @@
       "pyenv"
       "python@3.11"
       "python@3.12"
+      "python@3.13" # Runtime dependency of the gcloud-cli cask.
       "rtk"
+      "sdl2-compat" # Runtime dependency of the retained ffmpeg and mpv builds.
       # Keep the newer macOS-native notification binary.
       "terminal-notifier"
       # Keep this pair aligned with the Homebrew Neovim toolchain.
@@ -83,12 +91,30 @@
       cask "sikarugir-app/sikarugir/sikarugir", trusted: true
     '';
 
-    # Keep the first activation non-destructive and avoid coupling this
-    # migration to a mass package upgrade.
+    # Reconcile packages without coupling activation to mass upgrades.
     onActivation = {
       autoUpdate = false;
       upgrade = false;
+      # nix-darwin 25.11 emits Homebrew's removed `brew bundle --cleanup`
+      # switch. The compatibility activation step below uses the supported
+      # `brew bundle cleanup --force` subcommand instead.
       cleanup = "none";
     };
   };
+
+  system.activationScripts.homebrew.text = lib.mkAfter ''
+    # Remove undeclared packages without `--zap`, which could remove app data.
+    echo >&2 "Homebrew bundle cleanup..."
+    if [ -f "${config.homebrew.brewPrefix}/brew" ]; then
+      PATH="${config.homebrew.brewPrefix}:${lib.makeBinPath [ pkgs.mas ]}:$PATH" \
+      sudo \
+        --preserve-env=PATH \
+        --user=${lib.escapeShellArg config.homebrew.user} \
+        --set-home \
+        env \
+        HOMEBREW_NO_AUTO_UPDATE=1 brew bundle cleanup \
+          --file='${cleanupBrewfile}' \
+          --force
+    fi
+  '';
 }
