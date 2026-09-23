@@ -14,11 +14,14 @@
     fluxcd # Provides the `flux` command.
     gh
     ghostscript
+    gnumake
     graphviz
     imagemagick
     k6
     kubectx
     kubernetes-helm # Homebrew names this package "helm".
+    kubectl
+    lazydocker
     lazygit
     mkcert
     nmap
@@ -26,6 +29,8 @@
     ripgrep
     sops
     sshpass
+    terraform
+    unzip
     wireguard-tools
     xorriso
   ];

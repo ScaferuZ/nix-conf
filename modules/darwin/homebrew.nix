@@ -59,8 +59,6 @@ in
       "tree-sitter"
       "tree-sitter-cli"
       "yarn"
-      "zsh-autosuggestions"
-      "zsh-syntax-highlighting"
     ];
 
     casks = [

@@ -5,6 +5,7 @@
     ../../home/scaf/base.nix
     ../../modules/home/cli-tools.nix
     ../../modules/home/fzf.nix
+    ../../modules/home/mac-dotfiles.nix
   ];
 
   # Keep the Nix-managed user profile ahead of Homebrew. Homebrew's shellenv
@@ -23,7 +24,6 @@
     '';
   };
 
-  # Existing ~/.zshrc, ~/.tmux.conf, and ~/.config/nvim are intentionally
-  # left unmanaged during the first migration so activation cannot overwrite
-  # working or uncommitted configuration. Migrate them one at a time later.
+  # zsh, tmux, and Neovim configuration are repository-backed through
+  # mac-dotfiles.nix. Credentials and document/data directories stay local.
 }

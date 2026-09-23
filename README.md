@@ -95,6 +95,8 @@ to a nix-darwin release that uses `--force-cleanup` natively.
   launch agents.
 - `modules/home/cli-tools.nix` and `modules/home/fzf.nix` own portable user
   CLIs through Home Manager.
+- `modules/home/mac-dotfiles.nix` owns the Mac shell, Starship, tmux, and
+  Neovim configuration plus its reproducible Python plugin host.
 - `modules/darwin/homebrew.nix` owns native applications, fonts, fast-moving
   tools, language runtimes, and other documented Homebrew exceptions.
 - Project-specific language and SDK versions belong in each project's
@@ -118,8 +120,10 @@ The configuration preserves the delayed launch of yabai and skhd until
 
 Home Manager is integrated on both systems. On macOS it manages `~/.zprofile`
 to keep the Home Manager profile ahead of Homebrew while preserving optional
-OrbStack initialization. Existing `~/.zshrc`, `~/.tmux.conf`, and
-`~/.config/nvim` remain unmanaged and must be migrated individually.
+OrbStack initialization. It also reproduces the existing zsh aliases and shell
+behavior, tmux plugins/keybindings/theme, Starship prompt, and the complete
+Neovim configuration from `config/`. The newer Neovim binary remains owned by
+Homebrew; its configuration is an editable symlink to this repository.
 
 ## Mutable user tools
 
@@ -148,8 +152,11 @@ npm install --global \
 uv tool install browser-use
 ```
 
-These commands intentionally track current releases. Record project-specific
-versions in project configuration instead of pinning them globally here.
+These commands intentionally track current releases. The shell also preserves
+optional user-managed Bun (`~/.bun`) and Go (`/usr/local/go`) installations;
+install those from their official distributions only when needed. Record
+project-specific versions in project configuration instead of pinning them
+globally here.
 
 ## Secrets and local state
 
@@ -160,10 +167,12 @@ local state includes, when used:
 - `~/.ssh` and Git signing material
 - `~/.aws`, `~/.azure`, `~/.config/gcloud`, and `~/.kube`
 - `~/.config/sops/age/keys.txt` (mode `0600`)
+- `~/.config/zsh/secrets.zsh` for shell API keys and private exports (mode `0600`)
 - GitHub CLI authentication (`gh auth login`)
 - Git Credential Manager / Keychain entries
 - npm registry credentials and private package access
 - browser profiles and application-specific data
+- `~/Documents/orgmode`, `~/Documents/obsidian-notes`, and other personal notes
 
 Typical interactive restoration steps are:
 
@@ -175,7 +184,9 @@ gcloud auth login
 ```
 
 Never commit generated cloud credentials, kubeconfigs, SOPS age keys, SSH keys,
-Homebrew tokens, or decrypted secret files.
+Homebrew tokens, shell API keys, or decrypted secret files. On a new Mac, create
+`~/.config/zsh/secrets.zsh` with mode `0600` and add any required `export
+NAME="value"` entries there.
 
 ## Manual post-install steps
 
