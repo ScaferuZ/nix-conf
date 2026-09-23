@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
@@ -21,9 +22,21 @@
       self,
       nixpkgs,
       nix-darwin,
+      nixpkgs-darwin,
+      nixpkgs-unstable,
       home-manager,
       ...
     }:
+    let
+      workSystem = "aarch64-darwin";
+      workPkgs = import nixpkgs-darwin {
+        system = workSystem;
+        config.allowUnfreePredicate = pkg: nixpkgs-darwin.lib.getName pkg == "terraform";
+      };
+      workUnstablePkgs = import nixpkgs-unstable {
+        system = workSystem;
+      };
+    in
     {
       nixosConfigurations.x220 = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -51,6 +64,15 @@
             home-manager.users.scaf = import ./hosts/macbook-pro/home.nix;
           }
         ];
+      };
+
+      homeConfigurations."endra.rahman@work" = home-manager.lib.homeManagerConfiguration {
+        pkgs = workPkgs;
+        extraSpecialArgs = {
+          inherit inputs;
+          unstablePkgs = workUnstablePkgs;
+        };
+        modules = [ ./hosts/work/home.nix ];
       };
     };
 }

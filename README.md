@@ -6,6 +6,8 @@ NixOS, nix-darwin, and Home Manager configuration for Scaf's machines.
 
 - `x220`: x86_64 NixOS laptop
 - `macbook-pro`: Apple Silicon macOS laptop for user `scaf`
+- `endra.rahman@work`: standalone Apple Silicon Home Manager profile for
+  `/Users/endra.rahman`; it does not manage macOS or Homebrew
 
 The flake pins NixOS/nix-darwin/Home Manager 25.11-era inputs. Package and
 system changes should be made here, validated, and then activated rather than
@@ -209,18 +211,92 @@ launchctl print "gui/$(id -u)/org.nixos.yabai"
 launchctl print "gui/$(id -u)/org.nixos.skhd"
 ```
 
-## Work-laptop limitations
+## Work-laptop Home Manager profile
 
-This host configuration assumes local administrator and `sudo` access. MDM,
-endpoint security, restricted Homebrew taps, blocked Nix caches, application
-allow-lists, or policies forbidding yabai's scripting addition can prevent a
-complete activation. Do not bypass employer controls. Instead, derive a
-separate host configuration that omits prohibited casks, launch agents, or
-system settings.
+`homeConfigurations."endra.rahman@work"` is a separate `aarch64-darwin`
+user-only profile for `/Users/endra.rahman`. It deliberately does not import
+nix-darwin, Homebrew reconciliation, GUI casks, yabai/skhd, macOS defaults,
+personal Git identity, credentials, or personal document aliases.
 
-The Mac host architecture and username are currently fixed to `aarch64-darwin`
-and `scaf`; another machine or account requires a separate host
-module or an intentional parameterization change.
+It provides AWS and Azure CLIs, Terraform, Ansible, Kubernetes and Flux tools,
+SOPS, age, Git/GitHub tooling, common shell utilities, Pi, and the portable
+zsh, Starship, tmux, and Neovim configuration. Most packages remain on the
+pinned 25.11 Darwin input. Pi and Neovim use the separately pinned unstable
+input; the latter is required because the captured configuration uses
+`vim.pack` from Neovim 0.12.
+
+Do not bypass employer controls. Confirm that local policy permits the Nix
+multi-user daemon, `/nix`, required caches, and development tools before
+installing Nix. Use the organization's approved Nix installation procedure;
+this repository does not install Nix itself.
+
+After an approved Nix installation, clone the repository on the work laptop:
+
+```sh
+git clone https://github.com/ScaferuZ/nix-conf.git ~/.config/nix-conf
+cd ~/.config/nix-conf
+```
+
+Validate without changing the home directory:
+
+```sh
+nix flake check 'path:.' --all-systems --no-build
+nix build \
+  'path:.#homeConfigurations."endra.rahman@work".activationPackage' \
+  --no-link
+```
+
+Before the first activation, move any colliding configuration into a
+machine-local timestamped backup. Nothing is deleted:
+
+```sh
+backup="$HOME/.local/state/nix-conf-backups/$(date +%Y%m%d-%H%M%S)"
+for path in \
+  .zshrc \
+  .tmux.conf \
+  .config/starship.toml \
+  .config/zsh/z.sh \
+  .config/tmux/themes/token-flint-light.conf \
+  .config/nvim
+do
+  source="$HOME/$path"
+  if [ -e "$source" ] || [ -L "$source" ]; then
+    mkdir -p "$backup/$(dirname "$path")"
+    mv "$source" "$backup/$path"
+  fi
+done
+printf 'Backup: %s\n' "$backup"
+```
+
+Perform the first standalone activation with the Home Manager release matching
+this flake:
+
+```sh
+nix run github:nix-community/home-manager/release-25.11 -- \
+  switch --flake 'path:.#endra.rahman@work'
+```
+
+Subsequent activations can use the managed command or the `rebuild` alias:
+
+```sh
+home-manager switch --flake 'path:.#endra.rahman@work'
+```
+
+Authenticate separately on the work laptop; never copy personal credentials
+into the repository:
+
+```sh
+gh auth login
+aws configure sso
+```
+
+Before creating commits, configure Git's `user.name` and `user.email` locally
+with the employer-approved work identity; the profile intentionally does not
+supply either value.
+
+Restore only employer-approved SSH keys, AWS configuration, kubeconfigs, SOPS
+age keys, and shell secrets. A local `~/.config/zsh/secrets.zsh` is sourced when
+present and must remain untracked with mode `0600`.
 
 ## Rollback
 
