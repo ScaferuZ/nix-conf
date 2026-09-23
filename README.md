@@ -237,11 +237,21 @@ git clone https://github.com/ScaferuZ/nix-conf.git ~/.config/nix-conf
 cd ~/.config/nix-conf
 ```
 
-Validate without changing the home directory:
+Validate from the cloned repository without changing the home directory. If a
+fresh shell cannot find `nix`, temporarily restore the multi-user daemon path
+with `export PATH="/nix/var/nix/profiles/default/bin:$PATH"`; the activated
+profile makes that path persistent. Set `NIX_CONFIG` during bootstrap because
+Home Manager invokes Nix as a subprocess; an option passed only to the outer
+`nix run` is not inherited. The activated profile persists both values.
 
 ```sh
-nix flake check 'path:.' --all-systems --no-build
-nix build \
+export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+export NIX_CONFIG='experimental-features = nix-command flakes'
+cd ~/.config/nix-conf
+nix --extra-experimental-features 'nix-command flakes' \
+  flake check 'path:.' --all-systems --no-build
+nix --extra-experimental-features 'nix-command flakes' \
+  build \
   'path:.#homeConfigurations."endra.rahman@work".activationPackage' \
   --no-link
 ```
@@ -252,6 +262,7 @@ machine-local timestamped backup. Nothing is deleted:
 ```sh
 backup="$HOME/.local/state/nix-conf-backups/$(date +%Y%m%d-%H%M%S)"
 for path in \
+  .zshenv \
   .zshrc \
   .tmux.conf \
   .config/starship.toml \
@@ -272,7 +283,11 @@ Perform the first standalone activation with the Home Manager release matching
 this flake:
 
 ```sh
-nix run github:nix-community/home-manager/release-25.11 -- \
+export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+export NIX_CONFIG='experimental-features = nix-command flakes'
+cd ~/.config/nix-conf
+nix --extra-experimental-features 'nix-command flakes' \
+  run github:nix-community/home-manager/release-25.11 -- \
   switch --flake 'path:.#endra.rahman@work'
 ```
 

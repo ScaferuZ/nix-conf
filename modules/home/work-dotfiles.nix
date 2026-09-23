@@ -20,11 +20,14 @@ in
   home.sessionPath = [
     "${config.home.homeDirectory}/.local/bin"
     "${config.home.homeDirectory}/bin"
+    # Some managed Macs do not persist the multi-user installer's shell hook.
+    "/nix/var/nix/profiles/default/bin"
   ];
 
   home.sessionVariables = {
     EDITOR = "nvim";
     NVIM_PYTHON3_HOST_PROG = "${nvimPython}/bin/python3";
+    NIX_CONFIG = "experimental-features = nix-command flakes";
     SOPS_AGE_KEY_FILE = "${config.xdg.configHome}/sops/age/keys.txt";
     VISUAL = "nvim";
   };
@@ -52,7 +55,7 @@ in
 
     initContent = lib.mkOrder 1000 ''
       typeset -U path
-      path=($HOME/.local/bin $HOME/.nix-profile/bin $path)
+      path=($HOME/.local/bin $HOME/.nix-profile/bin /nix/var/nix/profiles/default/bin $path)
       rehash
 
       setopt inc_append_history
