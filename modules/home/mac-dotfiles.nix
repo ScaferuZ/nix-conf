@@ -57,6 +57,13 @@ in
     };
 
     initContent = lib.mkOrder 1000 ''
+      # Unlike .zprofile, an already-running shell can source only this file
+      # after activation. Refresh the same local-before-Nix path precedence and
+      # zsh's command hash without disturbing the remainder of PATH.
+      typeset -U path
+      path=($HOME/.local/bin /etc/profiles/per-user/$USER/bin /run/current-system/sw/bin $path)
+      rehash
+
       setopt inc_append_history
 
       source ${config.xdg.configHome}/zsh/z.sh
@@ -148,6 +155,28 @@ in
   xdg.configFile."tmux/themes/token-flint-light.conf" = {
     force = true;
     source = ../../config/tmux/themes/token-flint-light.conf;
+  };
+
+  # Credential values remain in Keychain. This only replaces the stale
+  # Homebrew-gh helper path that broke after gh moved into the Nix profile.
+  home.file.".gitconfig" = {
+    force = true;
+    text = ''
+      [user]
+        email = endrafruz@gmail.com
+      [credential]
+        helper =
+        helper = /usr/local/bin/git-credential-manager
+      [include]
+        path = ~/.config/git/work.inc
+      [credential "https://github.com"]
+        username = ScaferuZ
+        helper =
+        helper = /usr/local/bin/git-credential-manager
+      [credential "https://gist.github.com"]
+        helper =
+        helper = /usr/local/bin/git-credential-manager
+    '';
   };
 
   # Keep the newer Homebrew Neovim binary, but make its complete configuration
